@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InstallerApp.Install_Techno"
+             Title="Install_Techno"
+             BackgroundImageSource="fond.png">
+    <VerticalStackLayout
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
+        <!-- Apply rounded corners using Frame -->
+        <Frame BackgroundColor="#202020" 
+               CornerRadius="20" 
+               HasShadow="True">
+            <VerticalStackLayout
+                Spacing="80"
+                Padding="0,20,25,20"
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
+                <Label 
+                    x:Name="Label_Techno"
+                    Text="unknown"
+                    FontSize="Title"
+                    Style="{StaticResource Headline}"
+                    SemanticProperties.HeadingLevel="Level1"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center" />
+                <Entry x:Name="Project_Name" 
+                    Placeholder="Nom de votre projet" 
+                    VerticalOptions="Center" />
+                <Button 
+                    x:Name="Label_Path"
+                HorizontalOptions="FillAndExpand"
+                Clicked="OnSelectFolderClicked">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="FontAwesome3" Glyph="&#xf07b;" />
+                    </Button.ImageSource>
+                    <Button.Text>
+                        choisir un fichier
+                    </Button.Text>
+                    </Button>
+                    <HorizontalStackLayout 
+                    Spacing="50"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center">
+                    <Button 
+                        x:Name="Button_Installer"
+                        Text="Installer" 
+                        FontSize="Title"
+                        Clicked="Button_Installer_Clicked"/>
+                    <Button 
+                        Text="Retour" 
+                        FontSize="Title" 
+                        Clicked="Button_Retour"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </VerticalStackLayout>
+</ContentPage>

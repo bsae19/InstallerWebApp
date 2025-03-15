@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InstallerApp.Demarrage"
+             Title="Demarrage"
+             BackgroundImageSource="fond.png">
+    <VerticalStackLayout
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
+    <!-- Apply rounded corners using Frame -->
+        <Frame BackgroundColor="#202020" 
+               CornerRadius="20" 
+               HasShadow="True">
+          
+                <VerticalStackLayout
+        Spacing="80"
+        Padding="0,20,25,20"
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
+                <Label 
+                    Text="Installateur de base de Site Web Avancée"
+                    FontSize="Header"
+                    Style="{StaticResource Headline}"
+                    SemanticProperties.HeadingLevel="Level1"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center" />
+
+                <HorizontalStackLayout Spacing="80"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center">
+                    <Button Text="Installer" FontSize="Title" Clicked="Button_Install" />
+                    <Button Text="Quitter" FontSize="Title" Clicked="Button_Exit"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </VerticalStackLayout>
+</ContentPage>
