@@ -22,19 +22,37 @@ public partial class Install_Techno : ContentPage
     }
 
     private string? SelectedPath { get; set; }
-    private bool _isInitialized = false;
 
     public Install_Techno()
     {
+        Debug.WriteLine("start");
         InitializeComponent();
+        this.Appearing += Install_Techno_Appearing;
+    }
+    private void Install_Techno_Appearing(object sender, EventArgs e)
+    {
+        ResetPageData();
+    }
+
+    private void ResetPageData()
+    {
+        // Réinitialiser toutes les données
+        SelectedPath = null;
+        Label_Path.Text = "choisissez un dossier";
+        Project_Name.Text = string.Empty;
+
+        // Déclencher l'initialisation si Techno est déjà défini
+        if (!string.IsNullOrEmpty(Techno))
+        {
+            InitializeWithTechno();
+        }
     }
 
     private async void InitializeWithTechno()
     {
-        if (string.IsNullOrEmpty(Techno) || _isInitialized)
+        if (string.IsNullOrEmpty(Techno))
             return;
 
-        _isInitialized = true;
 
         // Update UI with technology name
         Label_Techno.Text = Techno;
@@ -52,11 +70,6 @@ public partial class Install_Techno : ContentPage
                 SelectedPath = folderResult.Folder.Path;
                 Label_Path.Text = SelectedPath;
             }
-            else
-            {
-                // User canceled folder selection
-                await Shell.Current.GoToAsync("//Installation");
-            }
         }
         catch (Exception ex)
         {
@@ -64,6 +77,38 @@ public partial class Install_Techno : ContentPage
             await DisplayAlert("Erreur", $"Impossible de sélectionner le dossier: {ex.Message}", "OK");
             await Shell.Current.GoToAsync("//Installation");
         }
+    }
+
+    private bool IsPhpInstalled()
+    {
+        try
+        {
+            // Try running "php --version"
+            var processStartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "php",
+                Arguments = "--version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            var process = System.Diagnostics.Process.Start(processStartInfo);
+            process.WaitForExit();
+
+            // If PHP is installed, the process will complete without error
+            if (process.ExitCode == 0)
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            // If an exception occurs, PHP is not installed or not accessible
+        }
+
+        return false;
     }
 
     private async void Button_Installer_Clicked(object sender, EventArgs e)
@@ -75,7 +120,7 @@ public partial class Install_Techno : ContentPage
         }
         if (string.IsNullOrEmpty(Project_Name.Text))
         {
-            await DisplayAlert("Attention", "Veuillez entrz un nom de projet", "OK");
+            await DisplayAlert("Attention", "Veuillez entrer un nom de projet", "OK");
             return;
         }
 
@@ -97,7 +142,7 @@ public partial class Install_Techno : ContentPage
 
                     // Clone le dépôt Flask si vous avez un dépôt GitHub à cloner
                     string repositoryUrl = $"https://github.com/bsae19/python_flask.git";
-                    bool cloned=CloneRepositoryFromGitHub(repositoryUrl, projectPath);
+                    bool cloned = CloneRepositoryFromGitHub(repositoryUrl, projectPath);
                     if (cloned)
                     {
                         if (DeviceInfo.Platform == DevicePlatform.iOS)
@@ -131,8 +176,49 @@ public partial class Install_Techno : ContentPage
                     }
                     else
                     {
-
                         await DisplayAlert("Erreur Git", $"Erreur lors du clonage du dépôt", "OK");
+                    }
+                    break;
+                case "Symfony":
+
+                    if (DeviceInfo.Platform == DevicePlatform.iOS)
+                    {
+                        // Show message for iOS users (cannot install Symfony directly on iOS)
+                        await DisplayAlert("Instructions",
+                            "PHP ne peut pas être installé directement depuis l'application sur iOS.\n" +
+                            "Veuillez installer PHP manuellement sur votre machine.\n\n" +
+                            "1. Installez PHP avec la commande :\n" +
+                            "   brew install php\n" +
+                            "2. Installez Composer avec la commande :\n" +
+                            "   php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"\n" +
+                            "   php composer-setup.php\n" +
+                            "   php -r \"unlink('composer-setup.php');\"\n" +
+                            "3. Installez Symfony avec la commande :\n" +
+                            "   composer create-project symfony/skeleton my_project_name",
+                            "OK");
+                        await DisplayAlert("Instructions",
+                            "Symfony ne peut pas être installé directement depuis l'application sur iOS.\n" +
+                            "Veuillez installer PHP et Symfony manuellement sur votre machine.\n\n" +
+                            "1. Installez PHP avec la commande :\n" +
+                            "   brew install php\n" +
+                            "2. Installez Composer avec la commande :\n" +
+                            "   php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"\n" +
+                            "   php composer-setup.php\n" +
+                            "   php -r \"unlink('composer-setup.php');\"\n" +
+                            "3. Installez Symfony avec la commande :\n" +
+                            "   composer create-project symfony/skeleton my_project_name",
+                            "OK");
+                    }
+                    else
+                    {
+
+                        if (!IsPhpInstalled())
+                        {
+                            await DisplayAlert("Erreur", "PHP n'est pas installé sur ce système. Veuillez installer PHP avant de continuer.", "OK");
+                            return;
+                        }
+
+                        // Add Symfony installation logic for other platforms here
                     }
                     break;
             }

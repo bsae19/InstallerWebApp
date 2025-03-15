@@ -35,7 +35,7 @@
                         <FontImageSource FontFamily="FontAwesome3" Glyph="&#xf07b;" />
                     </Button.ImageSource>
                     <Button.Text>
-                        choisir un fichier
+                        choisissez un dossier
                     </Button.Text>
                     </Button>
                     <HorizontalStackLayout 
