@@ -4,6 +4,8 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using LibGit2Sharp;
 using System.Diagnostics;
+using Microsoft.Maui.Storage;
+using System;
 namespace InstallerApp;
 
 [QueryProperty(nameof(Techno), "Techno")]
@@ -23,13 +25,13 @@ public partial class Install_Techno : ContentPage
 
     private string? SelectedPath { get; set; }
 
+    #region parametre_page
     public Install_Techno()
     {
-        Debug.WriteLine("start");
         InitializeComponent();
         this.Appearing += Install_Techno_Appearing;
     }
-    private void Install_Techno_Appearing(object sender, EventArgs e)
+    private void Install_Techno_Appearing(object? sender, EventArgs e)
     {
         ResetPageData();
     }
@@ -48,7 +50,7 @@ public partial class Install_Techno : ContentPage
         }
     }
 
-    private async void InitializeWithTechno()
+    private void InitializeWithTechno()
     {
         if (string.IsNullOrEmpty(Techno))
             return;
@@ -56,60 +58,11 @@ public partial class Install_Techno : ContentPage
 
         // Update UI with technology name
         Label_Techno.Text = Techno;
-
         // Start folder selection
     }
 
-    private async Task SelectFolderAsync()
-    {
-        try
-        {
-            var folderResult = await FolderPicker.PickAsync(cancellationToken: CancellationToken.None);
-            if (folderResult.IsSuccessful)
-            {
-                SelectedPath = folderResult.Folder.Path;
-                Label_Path.Text = SelectedPath;
-            }
-        }
-        catch (Exception ex)
-        {
-            // Display error message
-            await DisplayAlert("Erreur", $"Impossible de sélectionner le dossier: {ex.Message}", "OK");
-            await Shell.Current.GoToAsync("//Installation");
-        }
-    }
+    #endregion
 
-    private bool IsPhpInstalled()
-    {
-        try
-        {
-            // Try running "php --version"
-            var processStartInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = "php",
-                Arguments = "--version",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            var process = System.Diagnostics.Process.Start(processStartInfo);
-            process.WaitForExit();
-
-            // If PHP is installed, the process will complete without error
-            if (process.ExitCode == 0)
-            {
-                return true;
-            }
-        }
-        catch (Exception)
-        {
-            // If an exception occurs, PHP is not installed or not accessible
-        }
-
-        return false;
-    }
 
     private async void Button_Installer_Clicked(object sender, EventArgs e)
     {
@@ -130,12 +83,12 @@ public partial class Install_Techno : ContentPage
             // Example: Show loading message
             var toast = Toast.Make($"Installation de {Techno} en cours...", ToastDuration.Short);
             await toast.Show();
-
+            string projectName = Project_Name.Text;
+            string projectPath = Path.Combine(SelectedPath, projectName);
             switch (Techno)
             {
                 case "Flask":
-                    string projectName = Project_Name.Text;
-                    string projectPath = Path.Combine(SelectedPath, projectName);
+                    
 
                     // Crée le répertoire du projet si nécessaire
                     Directory.CreateDirectory(projectPath);
@@ -161,17 +114,33 @@ public partial class Install_Techno : ContentPage
                         {
                             if (!IsPythonInstalled())
                             {
-                                await DisplayAlert("Erreur", "Python n'est pas installé sur ce système. Veuillez installer Python avant de continuer.", "OK");
-                                return;
+                                bool isScoop = IsScoopInstalled();
+                                bool installPython = await DisplayAlert(
+                                    "Python non installé",
+                                    "Python n'est pas installé sur ce système."+(isScoop?"":"\n(cela entrainera l'installation du service scoop)")+ "\nVoulez-vous l'installer maintenant ?",
+                                    "Oui", "Non"
+                                );
+
+                                if (installPython)
+                                {
+                                    if (!isScoop)
+                                    {
+                                        InstallScoop();
+                                    }
+                                    InstallPython();
+                                    await CreateVirtualEnvironment(projectPath);
+
+                                    // Install Flask using pip (only for non-iOS platforms)
+                                    await InstallFlask(projectPath);
+                                }
                             }
-                            // For other platforms like Windows or Android
-                            // Provide instructions or steps to install Flask
+                            else
+                            {
+                                await CreateVirtualEnvironment(projectPath);
 
-                            // Create a virtual environment (only for non-iOS platforms)
-                            await CreateVirtualEnvironment(projectPath);
-
-                            // Install Flask using pip (only for non-iOS platforms)
-                            await InstallFlask(projectPath);
+                                // Install Flask using pip (only for non-iOS platforms)
+                                
+                            }
                         }
                     }
                     else
@@ -196,26 +165,45 @@ public partial class Install_Techno : ContentPage
                             "3. Installez Symfony avec la commande :\n" +
                             "   composer create-project symfony/skeleton my_project_name",
                             "OK");
-                        await DisplayAlert("Instructions",
-                            "Symfony ne peut pas être installé directement depuis l'application sur iOS.\n" +
-                            "Veuillez installer PHP et Symfony manuellement sur votre machine.\n\n" +
-                            "1. Installez PHP avec la commande :\n" +
-                            "   brew install php\n" +
-                            "2. Installez Composer avec la commande :\n" +
-                            "   php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"\n" +
-                            "   php composer-setup.php\n" +
-                            "   php -r \"unlink('composer-setup.php');\"\n" +
-                            "3. Installez Symfony avec la commande :\n" +
-                            "   composer create-project symfony/skeleton my_project_name",
-                            "OK");
+                        //await DisplayAlert("Instructions",
+                        //    "Symfony ne peut pas être installé directement depuis l'application sur iOS.\n" +
+                        //    "Veuillez installer PHP et Symfony manuellement sur votre machine.\n\n" +
+                        //    "1. Installez PHP avec la commande :\n" +
+                        //    "   brew install php\n" +
+                        //    "2. Installez Composer avec la commande :\n" +
+                        //    "   php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"\n" +
+                        //    "   php composer-setup.php\n" +
+                        //    "   php -r \"unlink('composer-setup.php');\"\n" +
+                        //    "3. Installez Symfony avec la commande :\n" +
+                        //    "   composer create-project symfony/skeleton my_project_name",
+                        //    "OK");
                     }
                     else
                     {
 
                         if (!IsPhpInstalled())
                         {
-                            await DisplayAlert("Erreur", "PHP n'est pas installé sur ce système. Veuillez installer PHP avant de continuer.", "OK");
-                            return;
+                            bool isScoop = IsScoopInstalled();
+                            bool installPhp = await DisplayAlert(
+                                "PHP non installé",
+                                "PHP n'est pas installé sur ce système." + (isScoop ? "" : "\n(cela entrainera l'installation du service scoop)") + "\nVoulez-vous l'installer maintenant ?",
+                                "Oui", "Non"
+                            );
+                            if (installPhp)
+                            {
+                                if (!isScoop)
+                                {
+                                    InstallScoop();
+                                }
+                                InstallPHP();
+                                CreateSymfonyProject(SelectedPath);
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine("demarrage");
+                            await CreateSymfonyProject(projectPath);
+                            Debug.WriteLine("fin");
                         }
 
                         // Add Symfony installation logic for other platforms here
@@ -225,6 +213,7 @@ public partial class Install_Techno : ContentPage
 
             var toast2 = Toast.Make($"{Techno} a été installé avec succès dans {SelectedPath}", ToastDuration.Long);
             await toast2.Show();
+            await Shell.Current.GoToAsync("///Installation");
         }
         catch (Exception ex)
         {
@@ -232,12 +221,106 @@ public partial class Install_Techno : ContentPage
         }
     }
 
+    #region Install_Techno
+
+    static void InstallScoop()
+    {
+        try
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = "-Command \"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process? process = Process.Start(psi))
+            {
+                process?.WaitForExit();
+                if (process?.ExitCode != 0)
+                {
+                    throw new Exception("Échec de l'installation de Scoop");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur lors de l'installation de Scoop: {ex.Message}");
+        }
+    }
+
+    static void InstallPython()
+    {
+        try
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = "-Command \"scoop install main/python\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process? process = Process.Start(psi))
+            {
+                process?.WaitForExit();
+                if (process?.ExitCode != 0)
+                {
+                    throw new Exception("Échec de l'installation de Python");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur lors de l'installation de Python: {ex.Message}");
+        }
+    }
+
+    static void InstallPHP()
+    {
+        try
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = "-Command \"scoop install main/php\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process? process = Process.Start(psi))
+            {
+                process?.WaitForExit();
+                if (process?.ExitCode != 0)
+                {
+                    throw new Exception("Échec de l'installation de PHP");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erreur lors de l'installation de PHP: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+
+
+    #region isinstalled
     private bool IsPythonInstalled()
     {
         try
         {
             // Try running "python --version" or "python3 --version" depending on the system
-            var processStartInfo = new System.Diagnostics.ProcessStartInfo
+            var processStartInfo = new ProcessStartInfo
             {
                 FileName = "python",
                 Arguments = "--version",
@@ -247,11 +330,11 @@ public partial class Install_Techno : ContentPage
                 CreateNoWindow = true
             };
 
-            var process = System.Diagnostics.Process.Start(processStartInfo);
-            process.WaitForExit();
+            var process = Process.Start(processStartInfo);
+            process?.WaitForExit();
 
             // If Python is installed, the process will complete without error
-            if (process.ExitCode == 0)
+            if (process?.ExitCode == 0)
             {
                 return true;
             }
@@ -264,7 +347,70 @@ public partial class Install_Techno : ContentPage
         return false;
     }
 
+    static bool IsScoopInstalled()
+    {
+        try
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = "-Command \"Get-Command scoop -ErrorAction SilentlyContinue\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
 
+            using (Process? process = Process.Start(psi))
+            {
+                if (process == null) return false;
+
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                return !string.IsNullOrWhiteSpace(output); // If output exists, Scoop is installed
+            }
+        }
+        catch
+        {
+            return false; // Error occurred, assuming Scoop is not installed
+        }
+    }
+
+    private bool IsPhpInstalled()
+    {
+        try
+        {
+            // Try running "php --version"
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "php",
+                Arguments = "--version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            var process = Process.Start(processStartInfo);
+            process?.WaitForExit();
+
+            // If PHP is installed, the process will complete without error
+            if (process?.ExitCode == 0)
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            // If an exception occurs, PHP is not installed or not accessible
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region github
 
     private static bool CloneRepositoryFromGitHub(string repositoryUrl, string localPath)
     {
@@ -285,6 +431,10 @@ public partial class Install_Techno : ContentPage
             return false;
         }
     }
+
+    #endregion
+
+    #region Python_project
     private async Task CreateVirtualEnvironment(string projectPath)
     {
         try
@@ -304,14 +454,15 @@ public partial class Install_Techno : ContentPage
             };
 
             var process = System.Diagnostics.Process.Start(processStartInfo);
-            await process.WaitForExitAsync();
+            await process?.WaitForExitAsync();
 
             if (process.ExitCode != 0)
             {
                 throw new Exception("Échec de la création de l'environnement virtuel");
             }
 
-            Console.WriteLine("Environnement virtuel créé avec succès.");
+            Debug.WriteLine("Environnement virtuel créé avec succès.");
+            await InstallFlask(projectPath);
         }
         catch (Exception ex)
         {
@@ -327,7 +478,7 @@ public partial class Install_Techno : ContentPage
             string pipPath = Path.Combine(venvScriptsPath, "pip.exe");
 
             // Use pip to install Flask
-            var processStartInfo = new System.Diagnostics.ProcessStartInfo
+            var processStartInfo = new ProcessStartInfo
             {
                 FileName = pipPath,
                 Arguments = "install flask",
@@ -338,8 +489,8 @@ public partial class Install_Techno : ContentPage
                 CreateNoWindow = true
             };
 
-            var process = System.Diagnostics.Process.Start(processStartInfo);
-            await process.WaitForExitAsync();
+            Process? process = Process.Start(processStartInfo);
+            await process?.WaitForExitAsync();
 
             if (process.ExitCode != 0)
             {
@@ -354,7 +505,143 @@ public partial class Install_Techno : ContentPage
         }
     }
 
+    #endregion
 
+    #region PHP_project
+
+
+    private async Task CreateSymfonyProject(string projectName)
+    {
+        EnableOpenSSLInPhpIni();
+        string composer_path= Path.Combine(AppContext.BaseDirectory, "Resources","Files","composer.phar");
+        Debug.WriteLine($"php {composer_path} create-project symfony/skeleton {projectName}");
+        await createSymfony($"{composer_path} create-project symfony/skeleton {projectName}");
+        Console.WriteLine("Symfony project created successfully!");
+    }
+
+    static void EnableOpenSSLInPhpIni()
+    {
+        Console.WriteLine("Locating php.ini file...");
+
+        // Get php.ini location
+        ProcessStartInfo iniStartInfo = new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/c php --ini",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        Process iniProcess = new Process { StartInfo = iniStartInfo };
+        iniProcess.Start();
+
+        string iniOutput = iniProcess.StandardOutput.ReadToEnd();
+        iniProcess.WaitForExit();
+
+        // Parse the output to find php.ini path
+        string phpIniPath = "";
+        Debug.Write(iniOutput);
+        foreach (string line in iniOutput.Split('\n'))
+        {
+            if (line.Contains("\\php.ini"))
+            {
+                Debug.WriteLine(line);
+                phpIniPath = line.Substring(line.IndexOf(':') + 1).Trim();
+                Debug.WriteLine(phpIniPath);
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(phpIniPath))
+        {
+            Console.WriteLine("Could not find php.ini file. Please check your PHP installation.");
+            return;
+        }
+
+        Console.WriteLine($"Found php.ini at: {phpIniPath}");
+
+        // Read the php.ini file
+        if (File.Exists(phpIniPath))
+        {
+            string content = File.ReadAllText(phpIniPath);
+
+            // Check if OpenSSL is commented out
+            if (content.Contains(";extension=openssl"))
+            {
+                // Uncomment the OpenSSL extension
+                content = content.Replace(";extension=openssl", "extension=openssl");
+
+                // Write the updated content back to php.ini
+                try
+                {
+                    File.WriteAllText(phpIniPath, content);
+                    Console.WriteLine("Successfully enabled OpenSSL extension in php.ini");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error writing to php.ini: {ex.Message}");
+                    Console.WriteLine("You may need to run this application as administrator.");
+                }
+            }
+            else if (content.Contains("extension=openssl"))
+            {
+                Console.WriteLine("OpenSSL extension is already enabled in php.ini");
+            }
+            else
+            {
+                Console.WriteLine("Could not find OpenSSL configuration in php.ini.");
+                Console.WriteLine("Attempting to add it...");
+
+                try
+                {
+                    File.AppendAllText(phpIniPath, "\nextension=openssl\n");
+                    Console.WriteLine("Added OpenSSL extension to php.ini");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error appending to php.ini: {ex.Message}");
+                    Console.WriteLine("You may need to run this application as administrator.");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine($"php.ini file not found at {phpIniPath}");
+        }
+    }
+
+    private async Task createSymfony(string command)
+    {
+        try
+        {
+
+            // Use pip to install Flask
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "php",
+                Arguments = $"{command}",
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            var process = Process.Start(processStartInfo);
+            await process?.WaitForExitAsync();
+
+            if (process.ExitCode != 0)
+            {
+                throw new Exception("Échec de l'installation de Symfony");
+            }
+
+            Debug.WriteLine("Symfony a été installé avec succès.");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", $"Échec de l'installation de Symfony: {ex.Message}", "OK");
+        }
+    }
+
+    #endregion
 
     private async void Button_Retour(object sender, EventArgs e)
     {
@@ -363,6 +650,21 @@ public partial class Install_Techno : ContentPage
     private async void OnSelectFolderClicked(object sender, EventArgs e)
     {
 
-        await SelectFolderAsync();
+        try
+        {
+            var folderResult = await FolderPicker.PickAsync(cancellationToken: CancellationToken.None);
+            if (folderResult.IsSuccessful)
+            {
+                SelectedPath = folderResult.Folder.Path;
+                Label_Path.Text = SelectedPath;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Display error message
+            await DisplayAlert("Erreur", $"Impossible de sélectionner le dossier: {ex.Message}", "OK");
+            await Shell.Current.GoToAsync("//Installation");
+        }
     }
+
 }
