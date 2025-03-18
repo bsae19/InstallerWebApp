@@ -12,7 +12,7 @@
 		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
 		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
 		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
-
+		<DeployOnBuild>true</DeployOnBuild>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>InstallerApp</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -71,6 +71,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+		<PackageReference Include="NLog" Version="5.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -89,7 +90,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Demarrage.xaml">
+	  <MauiXaml Update="Composant\Demarrage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Composant\Installation.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Composant\InstallTechno.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Composant\Page.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Installation.xaml">

@@ -95,58 +95,58 @@ public partial class Install_Techno : ContentPage
 
                     // Clone le dépôt Flask si vous avez un dépôt GitHub à cloner
                     string repositoryUrl = $"https://github.com/bsae19/python_flask.git";
-                    bool cloned = CloneRepositoryFromGitHub(repositoryUrl, projectPath);
-                    if (cloned)
-                    {
-                        if (DeviceInfo.Platform == DevicePlatform.iOS)
-                        {
-                            // Show message for iOS users (cannot install Flask directly on iOS)
-                            await DisplayAlert("Instructions",
-                                "Flask ne peut pas être installé directement depuis l'application sur iOS.\n" +
-                                "Veuillez installer Python et Flask manuellement sur votre machine.\n\n" +
-                                "1. Créez un environnement virtuel avec la commande :\n" +
-                                "   python -m venv venv\n" +
-                                "2. Installez Flask avec la commande :\n" +
-                                "   pip install flask",
-                                "OK");
-                        }
-                        else
-                        {
-                            if (!IsPythonInstalled())
-                            {
-                                bool isScoop = IsScoopInstalled();
-                                bool installPython = await DisplayAlert(
-                                    "Python non installé",
-                                    "Python n'est pas installé sur ce système."+(isScoop?"":"\n(cela entrainera l'installation du service scoop)")+ "\nVoulez-vous l'installer maintenant ?",
-                                    "Oui", "Non"
-                                );
+                    //bool cloned = CloneRepositoryFromGitHub(repositoryUrl, projectPath);
+                    //if (cloned)
+                    //{
+                    //    if (DeviceInfo.Platform == DevicePlatform.iOS)
+                    //    {
+                    //        // Show message for iOS users (cannot install Flask directly on iOS)
+                    //        await DisplayAlert("Instructions",
+                    //            "Flask ne peut pas être installé directement depuis l'application sur iOS.\n" +
+                    //            "Veuillez installer Python et Flask manuellement sur votre machine.\n\n" +
+                    //            "1. Créez un environnement virtuel avec la commande :\n" +
+                    //            "   python -m venv venv\n" +
+                    //            "2. Installez Flask avec la commande :\n" +
+                    //            "   pip install flask",
+                    //            "OK");
+                    //    }
+                    //    else
+                    //    {
+                    //        if (!IsPythonInstalled())
+                    //        {
+                    //            bool isScoop = IsScoopInstalled();
+                    //            bool installPython = await DisplayAlert(
+                    //                "Python non installé",
+                    //                "Python n'est pas installé sur ce système."+(isScoop?"":"\n(cela entrainera l'installation du service scoop)")+ "\nVoulez-vous l'installer maintenant ?",
+                    //                "Oui", "Non"
+                    //            );
 
-                                if (installPython)
-                                {
-                                    if (!isScoop)
-                                    {
-                                        InstallScoop();
-                                    }
-                                    InstallPython();
-                                    await CreateVirtualEnvironment(projectPath);
+                    //            if (installPython)
+                    //            {
+                    //                if (!isScoop)
+                    //                {
+                    //                    InstallScoop();
+                    //                }
+                    //                InstallPython();
+                    //                await CreateVirtualEnvironment(projectPath);
 
-                                    // Install Flask using pip (only for non-iOS platforms)
-                                    await InstallFlask(projectPath);
-                                }
-                            }
-                            else
-                            {
-                                await CreateVirtualEnvironment(projectPath);
+                    //                // Install Flask using pip (only for non-iOS platforms)
+                    //                await InstallFlask(projectPath);
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            await CreateVirtualEnvironment(projectPath);
 
-                                // Install Flask using pip (only for non-iOS platforms)
+                    //            // Install Flask using pip (only for non-iOS platforms)
                                 
-                            }
-                        }
-                    }
-                    else
-                    {
-                        await DisplayAlert("Erreur Git", $"Erreur lors du clonage du dépôt", "OK");
-                    }
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    await DisplayAlert("Erreur Git", $"Erreur lors du clonage du dépôt", "OK");
+                    //}
                     break;
                 case "Symfony":
 
@@ -411,26 +411,6 @@ public partial class Install_Techno : ContentPage
     #endregion
 
     #region github
-
-    private static bool CloneRepositoryFromGitHub(string repositoryUrl, string localPath)
-    {
-        try
-        {
-            // Assurez-vous d'avoir installé une bibliothèque Git comme LibGit2Sharp ou utilisez la commande Git via Process
-            using (var repo = new LibGit2Sharp.Repository(Repository.Clone(repositoryUrl, localPath)))
-            {
-                // Si le clonage est réussi
-                Debug.WriteLine($"Le projet {repositoryUrl} a été cloné avec succès à {localPath}");
-            }
-            return true;
-        }
-        catch (Exception ex)
-        {
-            // Affiche une erreur si le clonage échoue
-            Debug.WriteLine($"Erreur lors du clonage du dépôt {repositoryUrl}: {ex.Message}");
-            return false;
-        }
-    }
 
     #endregion
 
