@@ -46,35 +46,12 @@ public partial class InstallTechno : ContentView
 
         if (technoClass != null)
         {
-            // Store the created instance in a class-level variable
             _technoInstance = Activator.CreateInstance(technoClass);
-
-            //switch (techno)
-            //{
-            //    case "Flask":
-
-            //        break;
-            //    case "Symfony":
-            //        break;
-
-            //}
             Debug.WriteLine($"Techno instance created: {_technoInstance?.GetType()}");
-            // Now you can use _technoInstance elsewhere in your class
-            //if (_technoInstance is SomeClass someClassInstance)
-            //{
-            //    // Perform operations specific to SomeClass
-            //    someClassInstance.SomeMethod();
-            //}
-            //else
-            //{
-            //    // Handle case where the type doesn't match
-            //    Console.WriteLine($"Unable to create instance of {Techno}");
-            //}
         }
         else
         {
-            // Handle error if the class does not exist
-            Console.WriteLine($"Class {techno} not found.");
+            Debug.WriteLine($"Class {techno} not found.");
         }
     }
     private async void Button_Installer_Clicked(object sender, EventArgs e)
@@ -85,7 +62,16 @@ public partial class InstallTechno : ContentView
             if (installMethod != null)
             {
                 Debug.WriteLine($"Calling Install method on {_technoInstance?.GetType()}");
-                installMethod.Invoke(_technoInstance, new object[] { Path.Combine(SelectedPath, Label_Techno.Text),Shell.Current });
+                object? result = installMethod.Invoke(_technoInstance, new object[] { Path.Combine(SelectedPath, Project_Name.Text),Shell.Current });
+                if (result is Task<bool> taskBool)
+                {
+                    bool clean = await taskBool;
+                    if (clean)
+                    {
+                        ResetPageData();
+                    }
+                }
+
             }
             else
             {

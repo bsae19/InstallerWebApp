@@ -2,12 +2,18 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="InstallerApp.Composant.InstallTechno">
-    <VerticalStackLayout
-    Spacing="80"
+    <Grid
+    RowSpacing="50"
     Padding="0,20,25,20"
     VerticalOptions="Center"
     HorizontalOptions="Center">
-        <Label 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0"
         x:Name="Label_Techno"
         Text="unknown"
         FontSize="Title"
@@ -15,12 +21,11 @@
         SemanticProperties.HeadingLevel="Level1"
         VerticalOptions="Center" 
         HorizontalOptions="Center" />
-        <Entry x:Name="Project_Name" 
+        <Entry x:Name="Project_Name" Grid.Row="1"
         Placeholder="Nom de votre projet" 
         VerticalOptions="Center" />
-        <Button 
-        x:Name="Label_Path"
-    HorizontalOptions="FillAndExpand"
+        <Button Grid.Row="2"
+        x:Name="Label_Path" HorizontalOptions="Fill"
     Clicked="OnSelectFolderClicked">
             <Button.ImageSource>
                 <FontImageSource FontFamily="FontAwesome3" Glyph="&#xf07b;" />
@@ -29,7 +34,7 @@
                 choisissez un dossier
             </Button.Text>
         </Button>
-        <HorizontalStackLayout 
+        <HorizontalStackLayout Grid.Row="3"
         Spacing="50"
         VerticalOptions="Center"
         HorizontalOptions="Center">
@@ -43,5 +48,5 @@
             FontSize="Title" 
             Clicked="Button_Retour"/>
         </HorizontalStackLayout>
-    </VerticalStackLayout>
+    </Grid>
 </ContentView>

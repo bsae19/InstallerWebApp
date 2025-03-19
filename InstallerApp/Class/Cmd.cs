@@ -10,7 +10,7 @@ namespace InstallerApp.Class
 {
     internal class Cmd
     {
-        public static bool Execute(string filename,string args,bool redirect=false)
+        public static bool Execute(string filename,string args="",bool redirect=false)
         {
             try
             {
@@ -42,6 +42,7 @@ namespace InstallerApp.Class
             }
             catch
             {
+
                 return false; // Error occurred, assuming Scoop is not installed
             }
         }
