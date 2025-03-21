@@ -10,7 +10,7 @@ namespace InstallerApp.Class
 {
     internal class Cmd
     {
-        public static bool Execute(string filename,string args="",bool redirect=false)
+        public static bool Execute(string filename,string args="",bool redirect=false,string path=@".\")
         {
             try
             {
@@ -18,6 +18,7 @@ namespace InstallerApp.Class
                 {
                     FileName = filename,
                     Arguments = args,
+                    WorkingDirectory=path,
                     RedirectStandardOutput = redirect,
                     RedirectStandardError = redirect,
                     UseShellExecute = false,

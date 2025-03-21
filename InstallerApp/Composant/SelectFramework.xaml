@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InstallerApp.Composant.SelectFramework">
+    <Grid
+RowSpacing="50"
+Padding="0,20,25,20"
+VerticalOptions="Center"
+HorizontalOptions="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0"
+    x:Name="Label_Techno"
+    Text="unknown"
+    FontSize="Title"
+    Style="{StaticResource Headline}"
+    SemanticProperties.HeadingLevel="Level1"
+    VerticalOptions="Center" 
+    HorizontalOptions="Center" />
+        <HorizontalStackLayout Grid.Row="1"
+                               x:Name="layout"
+    Spacing="50"
+    VerticalOptions="Center"
+    HorizontalOptions="Center">
+        </HorizontalStackLayout>
+        <Button Grid.Row="2"
+Text="Retour" 
+FontSize="Title" 
+                VerticalOptions="Center" HorizontalOptions="Center"
+Clicked="Button_Retour"/>
+    </Grid>
+</ContentView>

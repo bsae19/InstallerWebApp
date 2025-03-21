@@ -13,6 +13,7 @@ namespace InstallerApp
                 new KeyValuePair<string, ContentView>("Demarrage", new Demarrage()),
                 new KeyValuePair<string, ContentView>("Installation", new Composant.Installation()),
                 new KeyValuePair<string, ContentView>("InstallTechno", new InstallTechno()),
+                new KeyValuePair<string, ContentView>("SelectFramework", new SelectFramework()),
                 //new KeyValuePair<string, ContentView>("Demarrage", new Composant.Demarrage()),
                 //new KeyValuePair<string, string>("Installation", "Installation"),
                 //new KeyValuePair<string, string>("Configuration", "Configuration"),

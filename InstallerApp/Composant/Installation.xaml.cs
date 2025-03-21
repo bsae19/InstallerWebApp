@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
 namespace InstallerApp.Composant;
 
 public partial class Installation : ContentView
@@ -12,13 +15,25 @@ public partial class Installation : ContentView
     }
     private void Button_Node(object sender, EventArgs e)
     {
+        Shell.Current.GoToAsync("//SelectFramework?Techno=Node");
     }
-    private void Button_Symfony(object sender, EventArgs e)
+    private void Button_PHP(object sender, EventArgs e)
     {
-        Shell.Current.GoToAsync("//InstallTechno?Techno=Symfony");
+        Shell.Current.GoToAsync("//SelectFramework?Techno=PHP");
     }
-    private void Button_Flask(object sender, EventArgs e)
+    private void Button_Python(object sender, EventArgs e)
     {
-        Shell.Current.GoToAsync("//InstallTechno?Techno=Flask");
+        Shell.Current.GoToAsync("//SelectFramework?Techno=Python");
+    }
+    private async void Button_Retour(object sender, EventArgs e)
+    {
+        try
+        {
+            await Shell.Current.GoToAsync("//Demarrage");
+        }
+        catch (COMException ex)
+        {
+            Debug.WriteLine($"Error during navigation: {ex.Message}");
+        }
     }
 }

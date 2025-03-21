@@ -92,8 +92,29 @@ namespace InstallerApp.Class
                 if (isSymfony && isPHP && isComposer)
                 {
                     EnableOpenSSLInPhpIni();
-                    string action = await sh.DisplayActionSheet("ActionSheet: Que voulez-vous construire?", null, null, "WebApp (Application web)", "microservice (API,console application)");
+                    string action = await sh.DisplayActionSheet("ActionSheet: Que voulez-vous construire?", null, null, "WebApp (Application web)", "microservice (API,console application)","Learning Demo");
                     await Task.Delay(500);
+                    switch (action)
+                    {
+                        case "WebApp (Application web)":
+                            if (!Cmd.Execute("symfony", "new " + projectPath + " --webapp" ))
+                            {
+                                throw new Exception("Échec de la création du projet");
+                            }
+                            break;
+                        case "microservice (API,console application)":
+                            if (!Cmd.Execute("symfony", "new " + projectPath))
+                            {
+                                throw new Exception("Échec de la création du projet");
+                            }
+                            break;
+                        case "Learning Demo":
+                            if (!Cmd.Execute("symfony", "new " + projectPath + " --demo"))
+                            {
+                                throw new Exception("Échec de la création du projet");
+                            }
+                            break;
+                    }
                     Debug.WriteLine("symfony", "new " + projectPath + (action == "WebApp (Application web)" ? " --webapp" : ""));
                     if(!Cmd.Execute("symfony", "new " + projectPath+(action== "WebApp (Application web)"?" --webapp" : "")))
                     {

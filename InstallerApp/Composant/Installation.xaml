@@ -18,9 +18,14 @@ HorizontalOptions="Center">
         <HorizontalStackLayout Spacing="50"
             VerticalOptions="Center"
             HorizontalOptions="Center">
-            <Button Text="NodeJs (Javascript)" FontSize="Title" Clicked="Button_Node" />
-            <Button Text="Symfony (Php)" FontSize="Title" Clicked="Button_Symfony"/>
-            <Button Text="Flask (Python)" FontSize="Title" Clicked="Button_Flask"/>
+            <Button Text="NodeJs" FontSize="Title" Clicked="Button_Node" />
+            <Button Text="PHP" FontSize="Title" Clicked="Button_PHP"/>
+            <Button Text="Python" FontSize="Title" Clicked="Button_Python"/>
         </HorizontalStackLayout>
+        <Button
+Text="Retour" 
+FontSize="Title" 
+                VerticalOptions="Center" HorizontalOptions="Center"
+Clicked="Button_Retour"/>
     </VerticalStackLayout>
 </ContentView>

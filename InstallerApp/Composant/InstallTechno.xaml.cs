@@ -39,7 +39,7 @@ public partial class InstallTechno : ContentView
             Label_Path.Text = SelectedPath;
         }
     }
-    public void setTechno(string techno)
+    public void setFramework(string techno)
     {
         Label_Techno.Text = techno;
         var technoClass = Type.GetType($"InstallerApp.Class.{techno}");
