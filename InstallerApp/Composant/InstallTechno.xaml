@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InstallerApp.Composant.InstallTechno">
+    <Grid
+    RowSpacing="50"
+    Padding="0,20,25,20"
+    VerticalOptions="Center"
+    HorizontalOptions="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0"
+        x:Name="Label_Techno"
+        Text="unknown"
+        FontSize="Title"
+        Style="{StaticResource Headline}"
+        SemanticProperties.HeadingLevel="Level1"
+        VerticalOptions="Center" 
+        HorizontalOptions="Center" />
+        <Entry x:Name="Project_Name" Grid.Row="1"
+        Placeholder="Nom de votre projet" 
+        VerticalOptions="Center" />
+        <Button Grid.Row="2"
+        x:Name="Label_Path" HorizontalOptions="Fill"
+    Clicked="OnSelectFolderClicked">
+            <Button.ImageSource>
+                <FontImageSource FontFamily="FontAwesome3" Glyph="&#xf07b;" />
+            </Button.ImageSource>
+            <Button.Text>
+                choisissez un dossier
+            </Button.Text>
+        </Button>
+        <HorizontalStackLayout Grid.Row="3"
+        Spacing="50"
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
+            <Button 
+            x:Name="Button_Installer"
+            Text="Installer" 
+            FontSize="Title"
+            Clicked="Button_Installer_Clicked"/>
+            <Button 
+            Text="Retour" 
+            FontSize="Title" 
+            Clicked="Button_Retour"/>
+        </HorizontalStackLayout>
+    </Grid>
+</ContentView>
