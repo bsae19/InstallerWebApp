@@ -22,7 +22,7 @@ namespace InstallerApp.Class
                     RedirectStandardOutput = redirect,
                     RedirectStandardError = redirect,
                     UseShellExecute = false,
-                    CreateNoWindow = true
+                    CreateNoWindow = false
                 };
                 using (Process? process = Process.Start(psi))
                 {
@@ -41,9 +41,9 @@ namespace InstallerApp.Class
                     // If output exists, Scoop is installed
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                Debug.WriteLine($"Error executing command: {ex.Message}");
                 return false; // Error occurred, assuming Scoop is not installed
             }
         }

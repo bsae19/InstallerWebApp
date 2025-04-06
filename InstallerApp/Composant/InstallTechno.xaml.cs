@@ -41,6 +41,7 @@ public partial class InstallTechno : ContentView
     }
     public void setFramework(string techno)
     {
+        Debug.WriteLine(techno);
         Label_Techno.Text = techno;
         var technoClass = Type.GetType($"InstallerApp.Class.{techno}");
 

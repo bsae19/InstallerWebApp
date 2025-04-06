@@ -18,7 +18,7 @@ HorizontalOptions="Center">
         <HorizontalStackLayout Spacing="50"
             VerticalOptions="Center"
             HorizontalOptions="Center">
-            <Button Text="NodeJs" FontSize="Title" Clicked="Button_Node" />
+            <Button Text="React" FontSize="Title" Clicked="Button_Node" />
             <Button Text="PHP" FontSize="Title" Clicked="Button_PHP"/>
             <Button Text="Python" FontSize="Title" Clicked="Button_Python"/>
         </HorizontalStackLayout>

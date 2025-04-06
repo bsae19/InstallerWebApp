@@ -15,7 +15,7 @@ public partial class Installation : ContentView
     }
     private void Button_Node(object sender, EventArgs e)
     {
-        Shell.Current.GoToAsync("//SelectFramework?Techno=Node");
+        Shell.Current.GoToAsync("//SelectFramework?Techno=React");
     }
     private void Button_PHP(object sender, EventArgs e)
     {

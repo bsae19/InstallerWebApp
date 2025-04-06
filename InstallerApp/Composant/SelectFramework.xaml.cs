@@ -25,8 +25,8 @@ public partial class SelectFramework : ContentView
     {
         switch (techno)
         {
-            case "Node":
-                foreach(string titre in new List<string>() {"ExpressJs","React","Vite","ReactFlowbite"})
+            case "React":
+                foreach(string titre in new List<string>() {"ExpressJs","Vite","ReactFlowbite"})
                 {
                     layout.Add(CreateButton(techno, titre));
                 }
